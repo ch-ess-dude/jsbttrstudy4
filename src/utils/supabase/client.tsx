@@ -1,9 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { projectId, publicAnonKey } from './info';
 
-const supabaseUrl = `https://${projectId}.supabase.co`;
+// Prefer environment variables when available (e.g., Vite), fallback to generated info
+const envUrl = (import.meta as any)?.env?.VITE_SUPABASE_URL as string | undefined;
+const envAnonKey = (import.meta as any)?.env?.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-export const supabase = createClient(supabaseUrl, publicAnonKey);
+const supabaseUrl = envUrl ?? `https://${projectId}.supabase.co`;
+
+export const supabase = createClient(supabaseUrl, envAnonKey ?? publicAnonKey);
 
 // Database Interfaces
 export interface User {

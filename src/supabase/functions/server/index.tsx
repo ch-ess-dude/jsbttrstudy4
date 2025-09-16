@@ -13,8 +13,8 @@ app.use('*', cors({
 }));
 
 const supabase = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+  Deno.env.get('https://cakzfgkuzeblnbvhujkv.supabase.co')!,
+  Deno.env.get('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNha3pmZ2t1emVibG5idmh1amt2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Njg5NDA1OSwiZXhwIjoyMDcyNDcwMDU5fQ.kww6z_ZXPO8k2Xr1cnpj71YjdYRr6OPc5_X6mOPGWws')!,
 );
 
 // ===============================================
@@ -440,20 +440,22 @@ app.get('/make-server-c21bec35/analytics', async (c) => {
     // Calculate study hours data for the past week
     const studyHoursData = [];
     const now = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-      const dayStart = new Date(date.setHours(0, 0, 0, 0));
-      const dayEnd = new Date(date.setHours(23, 59, 59, 999));
-      
+      const base = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dayName = base.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayStart = new Date(base);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(base);
+      dayEnd.setHours(23, 59, 59, 999);
+
       const dayHours = (recentSessions || [])
         .filter(session => {
           const sessionDate = new Date(session.created_at);
           return sessionDate >= dayStart && sessionDate <= dayEnd;
         })
         .reduce((total, session) => total + (session.duration / 60), 0);
-      
+
       studyHoursData.push({ day: dayName, hours: Math.round(dayHours * 10) / 10 });
     }
 
